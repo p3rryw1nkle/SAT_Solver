@@ -1,8 +1,13 @@
+import time
 import sys
+import os
 
 class SATSolver():
-    def __init__(self, input_file):
+    def __init__(self, input_file, solution_folder):
+        self.file_name = os.path.basename(input_file)
         self.clauses, self.all_literals = self.read_input(input_file)
+        self.solution_folder = solution_folder
+        self.solution = set()
 
     def read_input(self, input_file):
 
@@ -30,6 +35,8 @@ class SATSolver():
                 for literal in literals:
                     literal = literal.replace('-', '')
                     all_literals.add(literal)
+                if len(clause) == 0:
+                    continue
                 clauses.append(clause)
 
 
@@ -40,18 +47,61 @@ class SATSolver():
         '''
         Implement the DPLL algorithm
         '''
-        # partial assignment
-        pa = []
         sorted_literals = sorted(self.all_literals)
+        # partial assignment
+        pa = set()
 
-        def recursive_solve(partial_assignment):
+        def recursive_solve(partial_assignment, unassigned_literals):
+            # for each of the clauses, check to see if it is unsatisfied by partial assigment
+            # we know a clause is false when each variable has been assigned, but the clause is still false
+            for clause in self.clauses:
+
+                # assume clause is unsatisfied until proven True
+                satisfied = False
+                
+                # how many variables in the clause have been assigned
+                assigned = 0
+
+                for variable in clause:
+                    ### clause e.g. 122 222 322 422
+                    ### so it will iterate through variables 122, 222, 322, and 422
+
+                    # if the variable is in the partial assignment we know this clause is satisfied
+                    if variable in partial_assignment:
+                        satisfied = True
+                    
+                    # if the variable is not in the partial assigment, check to see if its inverse is in the PA
+                    t_var = variable.replace('-', '')
+                    f_var = f"-{t_var}"
+
+                    # if either true or false literal is in the pa, we know this literal has been assigned but clause is not positive (yet)
+                    if t_var in partial_assignment or f_var in partial_assignment:
+                        assigned += 1
+
+                # if all variables in this clause have been assigned and it is still not satisfied, we know for sure this PA won't work
+                if assigned == len(clause) and not satisfied:
+                    return False
+                
+            # if all literals have been assigned and no clauses are unsatisfied, return true
             if len(partial_assignment) == len(self.all_literals):
-                return
+                self.solution = partial_assignment
+                return True
             
-            next = sorted_literals.pop(0)
-            recursive_solve(partial_assignment.append(next))
-  
-        return recursive_solve(pa)
+            # get this next literal from unassigned literals
+            next_literal = unassigned_literals.pop(0)
+
+            # try the false value first
+            false_literal = f"-{next_literal}"
+            partial_assignment.add(false_literal)
+            if recursive_solve(partial_assignment.copy(), unassigned_literals.copy()):
+                return True
+            else:
+                # try true value next
+                partial_assignment.remove(false_literal)
+                partial_assignment.add(next_literal)
+                return recursive_solve(partial_assignment.copy(), unassigned_literals.copy())
+
+        return recursive_solve(pa, sorted_literals)
 
     def solve_heuristic_1(self):
         '''
@@ -65,16 +115,24 @@ class SATSolver():
         '''
         pass
 
-    def write_output(seflf):
+    def write_output(self):
         '''
         Write output to file in DIMAC format
         '''
-        pass
+
+        with open(f"solutions/{self.solution_folder}/sol_{self.file_name}", "w") as f:
+            f.write(f"p {len(self.all_literals)} {len(self.solution)}\n")
+            for assignment in sorted(self.solution):
+                f.write(f"{assignment} 0\n")
+
 
 if __name__ == "__main__":
     algo_number = int(sys.argv[1])
     input_file = sys.argv[2]
-    solver = SATSolver(input_file)
+    solution_folder = sys.argv[3]
+    solver = SATSolver(input_file, solution_folder)
+
+    start_time = time.time()
 
     match algo_number:
         case 1:
@@ -83,5 +141,9 @@ if __name__ == "__main__":
             solver.solve_heuristic_1()
         case 3:
             solver.solve_heuristic_2()
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
 
     solver.write_output()
