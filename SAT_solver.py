@@ -3,10 +3,11 @@ import sys
 import os
 
 class SATSolver():
-    def __init__(self, input_file, solution_folder):
+    def __init__(self, input_file):
         self.file_name = os.path.basename(input_file)
+        self.puzzle_dimension = 1
         self.clauses, self.all_literals = self.read_input(input_file)
-        self.solution_folder = solution_folder
+        self.solution_folder = f"{self.puzzle_dimension}x{self.puzzle_dimension}"
         self.solution = set()
 
     def read_input(self, input_file):
@@ -39,6 +40,8 @@ class SATSolver():
                     continue
                 clauses.append(clause)
 
+        self.puzzle_dimension = round(len(all_literals)**(1/3))
+        print(f"Puzzle dimension: {self.puzzle_dimension}")
 
         return clauses, all_literals
 
@@ -129,8 +132,7 @@ class SATSolver():
 if __name__ == "__main__":
     algo_number = int(sys.argv[1])
     input_file = sys.argv[2]
-    solution_folder = sys.argv[3]
-    solver = SATSolver(input_file, solution_folder)
+    solver = SATSolver(input_file)
 
     start_time = time.time()
 
@@ -147,3 +149,7 @@ if __name__ == "__main__":
     print(f"Elapsed time: {elapsed_time} seconds")
 
     solver.write_output()
+
+# prioritizing literals by how often we've seen them
+
+# focus on row, columns, and boxes that have the fewest empty variables left
