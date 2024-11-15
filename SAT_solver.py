@@ -21,7 +21,7 @@ class SATSolver():
                 
         '''
 
-        clauses = []
+        clauses = set()
         all_literals = set()
 
         with open(input_file, "r") as f:
@@ -32,79 +32,169 @@ class SATSolver():
                 line = line.replace('0\n', '')
                 line = line.strip()
                 literals = line.split(' ')
-                clause = set(literals)
+                clause = tuple(literals)
                 for literal in literals:
                     literal = literal.replace('-', '')
                     all_literals.add(literal)
                 if len(clause) == 0:
                     continue
-                clauses.append(clause)
+                clauses.add(clause)
 
         self.puzzle_dimension = round(len(all_literals)**(1/3))
         print(f"Puzzle dimension: {self.puzzle_dimension}")
 
         return clauses, all_literals
 
+    @staticmethod
+    def rev_literal(literal):
+        """
+        Reverse a literal so it returns its opposite
+        """
+        if '-' in literal:
+            return literal.replace('-','')
+        else:
+            return f"-{literal}"
+
 
     def solve_dpll(self):
         '''
         Implement the DPLL algorithm
         '''
-        sorted_literals = sorted(self.all_literals)
-        # partial assignment
-        pa = set()
-
-        def recursive_solve(partial_assignment, unassigned_literals):
-            # for each of the clauses, check to see if it is unsatisfied by partial assigment
-            # we know a clause is false when each variable has been assigned, but the clause is still false
-            for clause in self.clauses:
-
-                # assume clause is unsatisfied until proven True
-                satisfied = False
-                
-                # how many variables in the clause have been assigned
-                assigned = 0
-
-                for variable in clause:
-                    ### clause e.g. 122 222 322 422
-                    ### so it will iterate through variables 122, 222, 322, and 422
-
-                    # if the variable is in the partial assignment we know this clause is satisfied
-                    if variable in partial_assignment:
-                        satisfied = True
-                    
-                    # if the variable is not in the partial assigment, check to see if its inverse is in the PA
-                    t_var = variable.replace('-', '')
-                    f_var = f"-{t_var}"
-
-                    # if either true or false literal is in the pa, we know this literal has been assigned but clause is not positive (yet)
-                    if t_var in partial_assignment or f_var in partial_assignment:
-                        assigned += 1
-
-                # if all variables in this clause have been assigned and it is still not satisfied, we know for sure this PA won't work
-                if assigned == len(clause) and not satisfied:
-                    return False
-                
-            # if all literals have been assigned and no clauses are unsatisfied, return true
-            if len(partial_assignment) == len(self.all_literals):
+        def recursive_solve(partial_assignment, clauses):
+            
+            # if all clauses have been solved
+            if len(clauses) == 0:
                 self.solution = partial_assignment
                 return True
             
-            # get this next literal from unassigned literals
-            next_literal = unassigned_literals.pop(0)
+            # make a copy so we can modify clauses while we iterate through
+            cur_clauses = clauses.copy()
 
-            # try the false value first
-            false_literal = f"-{next_literal}"
-            partial_assignment.add(false_literal)
-            if recursive_solve(partial_assignment.copy(), unassigned_literals.copy()):
+            # we will know what literals are pure after we have iterated through all of the clauses
+            pure_literals = {}
+
+            for clause in clauses:
+                # if there is an empty clause, the formula is false so return false
+                if len(clause) == 0:
+                    return False
+                
+                # if it is a unit clause
+                if len(clause) == 1:
+
+                    # add literal to partial assigment
+                    (lit,) = clause
+
+                    # stripped literal
+                    strp_lit = lit.replace('-','')
+
+                    # assign the literal its appropriate value
+                    if '-' in lit:
+                        partial_assignment[strp_lit] = False
+                    else:
+                        partial_assignment[strp_lit] = True
+
+                    # we can remove this clause since it is a unit clause          
+                    cur_clauses.remove(clause)
+                    return recursive_solve(partial_assignment.copy(), cur_clauses.copy())     
+
+                # if it's not a unit clause or the empty clause, we will iterate through each literal
+                # we may remove false literals from the clause as we go, so we create a new_clause variable
+                new_clause = list(clause)
+                clause_satisfied = False
+
+                # go through each literal in each clause
+                for literal in clause:
+                    # stripped literal
+                    strp_lit = literal.replace('-', '')
+
+                    # reversed literal
+                    rev_lit = self.rev_literal(literal)
+
+                    # if the opposite literal is also in the clause, then this clause is a tautology and we can remove it
+                    if (literal in clause) and (rev_lit in clause):
+                        if clause in cur_clauses:
+                            cur_clauses.remove(clause)
+                        return recursive_solve(partial_assignment.copy(), cur_clauses.copy())
+
+                    if strp_lit in partial_assignment:
+                        # if the literal in the clause matches its assignment
+                        if (('-' in literal) and partial_assignment[strp_lit] == False) or \
+                            (('-' not in literal) and partial_assignment[strp_lit] == True):
+
+                            clause_satisfied = True
+                            # this clause is satisfied, we can remove it
+                            if clause in cur_clauses:
+                                cur_clauses.remove(clause)  
+                        else:
+                            lit_val = False
+                            if "-" not in literal:
+                                lit_val = True
+
+                            assert partial_assignment[strp_lit] != lit_val
+
+                            print(f"Removing literal {literal} from clause {clause}")
+                            # shorten clause (literal is false so we only care about the rest of the clause)
+                            new_clause.remove(literal)
+                
+                new_clause = tuple(new_clause)
+
+                if new_clause != clause and not clause_satisfied:
+                    # print(f"Shortening old clause: {clause} to new clause: {new_clause}")
+                    cur_clauses.remove(clause)
+                    cur_clauses.add(tuple(new_clause))
+
+            pure_literals = {}
+
+            for clause in clauses:
+                for literal in clause:
+                    # if the literal has already been assigned, its purity in the remaining clauses is irrelevant
+                    if literal not in partial_assignment:
+                        # reverse literal
+                        rev_lit = self.rev_literal(literal)
+
+                        if literal not in pure_literals:
+                            pure_literals[literal] = True
+                        # otherwise if both the literal and its negation are in the remaining clauses, set both purities to false
+                        if (literal in pure_literals) and (rev_lit in pure_literals):
+                            pure_literals[literal] = False
+                            pure_literals[rev_lit] = False
+
+            # add all pure literals to partial_assignment
+            for literal in pure_literals:
+                strp_lit = literal.replace('-','')
+                if pure_literals[literal] == True and (strp_lit not in partial_assignment):
+                    rev_lit = self.rev_literal(literal)
+                    
+                    for clause in clauses:
+                        if rev_lit in clause:
+                            raise Exception("Literal is not actually pure!")
+
+                    if "-" in literal:
+                        partial_assignment[strp_lit] = False
+                    else:                    
+                        partial_assignment[strp_lit] = True
+
+            assigned_literals = set(partial_assignment.keys())
+            unassigned_literals = self.all_literals.difference(assigned_literals)
+
+            # if there are no more literals to assign
+            if len(unassigned_literals) == 0:
+                # this should return True
+                return recursive_solve(partial_assignment.copy(), cur_clauses.copy())
+
+            # get the next literal from unassigned literals
+            next_literal = sorted(unassigned_literals).pop(0)
+
+            partial_assignment[next_literal] = False
+            if recursive_solve(partial_assignment.copy(), cur_clauses.copy()):
                 return True
             else:
                 # try true value next
-                partial_assignment.remove(false_literal)
-                partial_assignment.add(next_literal)
-                return recursive_solve(partial_assignment.copy(), unassigned_literals.copy())
+                partial_assignment[next_literal] = True
+                return recursive_solve(partial_assignment.copy(), cur_clauses.copy())
 
-        return recursive_solve(pa, sorted_literals)
+        return recursive_solve({}, self.clauses.copy())
+    
 
     def solve_heuristic_1(self):
         '''
@@ -126,7 +216,11 @@ class SATSolver():
         with open(f"solutions/{self.solution_folder}/sol_{self.file_name}", "w") as f:
             f.write(f"p {len(self.all_literals)} {len(self.solution)}\n")
             for assignment in sorted(self.solution):
-                f.write(f"{assignment} 0\n")
+                if self.solution[assignment] == False:
+                    continue
+                    f.write(f"-{assignment} 0\n")
+                else:
+                    f.write(f"{assignment} 0\n")
 
 
 if __name__ == "__main__":
