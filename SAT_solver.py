@@ -149,7 +149,3 @@ if __name__ == "__main__":
     print(f"Elapsed time: {elapsed_time} seconds")
 
     solver.write_output()
-
-# prioritizing literals by how often we've seen them
-
-# focus on row, columns, and boxes that have the fewest empty variables left
