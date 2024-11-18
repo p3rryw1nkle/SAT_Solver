@@ -190,13 +190,108 @@ class SATSolver():
                 return recursive_solve(partial_assignment.copy(), cur_clauses.copy())
 
         return recursive_solve({}, self.clauses.copy())
-    
 
     def solve_heuristic_1(self):
-        '''
-        Implement first hueristic
-        '''
-        pass
+        """
+        Implement first heuristic
+        """
+
+        def recursive_solve(partial_assignment, clauses):
+
+            # if all clauses have been solved
+            if len(clauses) == 0:
+                self.solution = partial_assignment
+                return True
+
+            # if there is an empty clause, the formula is false so return false
+            for clause in clauses:
+                if len(clause) == 0:
+                    return False
+
+            # assign values to unit clauses
+            unit_clauses = [clause for clause in clauses if len(clause) == 1]
+            for unit in unit_clauses:
+                (lit,) = unit
+                stripped_literal = lit.replace('-', '')
+                partial_assignment[stripped_literal] = '-' not in lit
+                clauses = simplify_clauses(clauses, partial_assignment)
+
+            # remove pure literals
+            literal_counts = {}
+            for clause in clauses:
+                for literal in clause:
+                    literal_counts[literal] = literal_counts.get(literal, 0) + 1
+
+            for literal in list(literal_counts.keys()):
+                rev_literal = self.rev_literal(literal)
+                if rev_literal not in literal_counts:
+                    stripped_literal = literal.replace('-', '')
+                    partial_assignment[stripped_literal] = '-' not in literal
+                    clauses = simplify_clauses(clauses, partial_assignment)
+
+            # choose the literal with the highest frequency
+            literal_frequency = {}
+            for clause in clauses:
+                for literal in clause:
+                    if literal not in partial_assignment:
+                        literal_frequency[literal] = literal_frequency.get(literal, 0) + 1
+
+            if not literal_frequency:
+                return False
+
+            # choose the literal with the highest frequency to break ties
+            next_literal = max(literal_frequency, key=literal_frequency.get)
+
+            stripped_literal = next_literal.replace('-', '')
+
+            for clause in clauses:
+                if next_literal in clause or self.rev_literal(next_literal) in clause:
+                    print(f"Removing literal {next_literal} from clause {clause}")
+
+            # Try assigning False, then True
+            for value in [False, True]:
+                # Backup the partial assignment and the clauses before the decision
+                new_partial_assignment = partial_assignment.copy()
+                new_clauses = [tuple(clause) for clause in clauses]
+
+                # Apply the literal assignment
+                new_partial_assignment[stripped_literal] = value if '-' not in next_literal else not value
+                updated_clauses = simplify_clauses(new_clauses, new_partial_assignment)
+
+                # Recurse with the new partial assignment and simplified clauses
+                success = recursive_solve(new_partial_assignment, updated_clauses)
+                if success:
+                    return True
+
+            return False
+
+        def simplify_clauses(clauses, assignment):
+            simplified_clauses = set()
+            for clause in clauses:
+                new_clause = []
+                clause_satisfied = False
+
+                for literal in clause:
+                    stripped_literal = literal.replace('-', '')
+                    if stripped_literal in assignment:
+                        # literal satisfaction check
+                        if (('-' in literal and not assignment[stripped_literal]) or
+                                ('-' not in literal and assignment[stripped_literal])):
+                            clause_satisfied = True
+                            break
+                    else:
+                        new_clause.append(literal)
+
+                if not clause_satisfied and new_clause:
+                    simplified_clauses.add(tuple(new_clause))
+
+            return simplified_clauses
+
+        # solve puzzle
+        success = recursive_solve({}, self.clauses.copy())
+
+        # write the output to file
+        self.write_output()
 
     def solve_heuristic_2(self):
         '''
