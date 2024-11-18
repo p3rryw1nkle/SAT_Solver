@@ -20,7 +20,7 @@ class PuzzleEncoder():
                 clauses.append(clause)
         
         # Write the clauses to a file
-        with open(f"test_sets/encoded/{n}x{n}_sudokus/sudoku_{file_index}.txt", "w") as f:
+        with open(f"test_sets/encoded/{n}x{n}_sudokus/{self.input_file.replace(".txt", "")}_sudoku_{file_index}.txt", "w") as f:
             f.write("\n".join(clauses) + "\n")
             f.write("".join(self.puzzle_rules))
 
@@ -33,5 +33,5 @@ class PuzzleEncoder():
 
 
 if __name__ == "__main__":
-    encoder = PuzzleEncoder(input_file="smallset.txt", dimension=4)
+    encoder = PuzzleEncoder(input_file="9set.txt", dimension=9)
     encoder.process_sudoku_file()

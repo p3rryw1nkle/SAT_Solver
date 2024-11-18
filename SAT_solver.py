@@ -70,9 +70,6 @@ class SATSolver():
             # make a copy so we can modify clauses while we iterate through
             cur_clauses = clauses.copy()
 
-            # we will know what literals are pure after we have iterated through all of the clauses
-            pure_literals = {}
-
             for clause in clauses:
                 # if there is an empty clause, the formula is false so return false
                 if len(clause) == 0:
@@ -147,14 +144,14 @@ class SATSolver():
 
             for clause in clauses:
                 for literal in clause:
-                    # if the literal has already been assigned, its purity in the remaining clauses is irrelevant
+                    # if the literal has already been assigned, skip over it
                     if literal not in partial_assignment:
                         # reverse literal
                         rev_lit = self.rev_literal(literal)
 
                         if literal not in pure_literals:
                             pure_literals[literal] = True
-                        # otherwise if both the literal and its negation are in the remaining clauses, set both purities to false
+                        # if both the literal and its negation are in the remaining clauses, set both purities to false
                         if (literal in pure_literals) and (rev_lit in pure_literals):
                             pure_literals[literal] = False
                             pure_literals[rev_lit] = False
@@ -179,7 +176,6 @@ class SATSolver():
 
             # if there are no more literals to assign
             if len(unassigned_literals) == 0:
-                # this should return True
                 return recursive_solve(partial_assignment.copy(), cur_clauses.copy())
 
             # get the next literal from unassigned literals
@@ -189,7 +185,7 @@ class SATSolver():
             if recursive_solve(partial_assignment.copy(), cur_clauses.copy()):
                 return True
             else:
-                # try true value next
+                # try the true value next
                 partial_assignment[next_literal] = True
                 return recursive_solve(partial_assignment.copy(), cur_clauses.copy())
 
@@ -215,18 +211,43 @@ class SATSolver():
 
         with open(f"solutions/{self.solution_folder}/sol_{self.file_name}", "w") as f:
             f.write(f"p {len(self.all_literals)} {len(self.solution)}\n")
-            for assignment in sorted(self.solution):
-                if self.solution[assignment] == False:
-                    continue
-                    f.write(f"-{assignment} 0\n")
-                else:
+            sorted_solution = sorted(self.solution)
+            for assignment in sorted_solution:
+                if self.solution[assignment] == True:
                     f.write(f"{assignment} 0\n")
+            for assignment in sorted_solution:
+                if self.solution[assignment] == False:
+                    f.write(f"-{assignment} 0\n")
 
+
+    def verify_solution(self, puzzle_file, sol_file):
+        puzzle_clauses, _ = self.read_input(puzzle_file)
+        sol_clauses, _ = self.read_input(sol_file)
+
+        rules_broken = False
+
+        for clause in puzzle_clauses:
+            clause_satisfied = False
+            for literal in clause:
+                if (literal,) in sol_clauses:
+                    clause_satisfied = True
+                    continue
+            if not clause_satisfied:
+                rules_broken = True
+                print(f"Clause {clause} not satisfied!")
+
+        if rules_broken:
+            print("Rules were not followed!")
 
 if __name__ == "__main__":
     algo_number = int(sys.argv[1])
     input_file = sys.argv[2]
     solver = SATSolver(input_file)
+
+    try:
+        sol_file = sys.argv[3]
+    except:
+        sol_file = None
 
     start_time = time.time()
 
@@ -237,9 +258,12 @@ if __name__ == "__main__":
             solver.solve_heuristic_1()
         case 3:
             solver.solve_heuristic_2()
+        case 4:
+            solver.verify_solution(input_file, sol_file)
 
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time: {elapsed_time} seconds")
 
-    solver.write_output()
+    if algo_number != 4:
+        solver.write_output()
