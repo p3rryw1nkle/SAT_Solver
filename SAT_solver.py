@@ -208,13 +208,18 @@ class SATSolver():
                 if len(clause) == 0:
                     return False
 
-            # assign values to unit clauses
-            unit_clauses = [clause for clause in clauses if len(clause) == 1]
-            for unit in unit_clauses:
-                (lit,) = unit
-                stripped_literal = lit.replace('-', '')
-                partial_assignment[stripped_literal] = '-' not in lit
-                clauses = simplify_clauses(clauses, partial_assignment)
+            for clause in clauses:
+                if len(clause) == 1:
+                    (lit,) = clause
+                    stripped_literal = lit.replace('-', '')
+                    # print(f"adding unit clause: {clause} to partial assignment")
+                    partial_assignment[stripped_literal] = ('-' not in lit)
+                    assert partial_assignment[stripped_literal] == ('-' not in lit)
+
+            # clauses = simplify_clauses(clauses, partial_assignment)
+
+            # if not self.check_partial_assignment(partial_assignment, clauses):
+            #     raise Exception("PA not valid after unit clause assignment!")
 
             # remove pure literals
             literal_counts = {}
@@ -226,8 +231,16 @@ class SATSolver():
                 rev_literal = self.rev_literal(literal)
                 if rev_literal not in literal_counts:
                     stripped_literal = literal.replace('-', '')
-                    partial_assignment[stripped_literal] = '-' not in literal
-                    clauses = simplify_clauses(clauses, partial_assignment)
+                    partial_assignment[stripped_literal] = ('-' not in literal)
+                    assert partial_assignment[stripped_literal] == ('-' not in literal)
+
+            # if not self.check_partial_assignment(partial_assignment, clauses):
+            #     raise Exception("PA not valid after pure literal assignment!")
+            
+            clauses = simplify_clauses(clauses, partial_assignment)
+
+            # if not self.check_partial_assignment(partial_assignment, clauses):
+            #     raise Exception("PA not valid after simplification!")
 
             # choose the literal with the highest frequency
             literal_frequency = {}
@@ -236,31 +249,29 @@ class SATSolver():
                     if literal not in partial_assignment:
                         literal_frequency[literal] = literal_frequency.get(literal, 0) + 1
 
-            if not literal_frequency:
-                return False
+            if len(literal_frequency) == 0:
+                print(f"literal frequency is 0, partial assignment: {len(partial_assignment)}")
 
+            # if all literals have already been assigned
+            if not literal_frequency:
+                if self.check_partial_assignment(partial_assignment, clauses):
+                    self.solution = partial_assignment
+                    return True
+                else:
+                    return False
+            
             # choose the literal with the highest frequency to break ties
             next_literal = max(literal_frequency, key=literal_frequency.get)
 
             stripped_literal = next_literal.replace('-', '')
 
-            for clause in clauses:
-                if next_literal in clause or self.rev_literal(next_literal) in clause:
-                    print(f"Removing literal {next_literal} from clause {clause}")
-
             # Try assigning False, then True
             for value in [False, True]:
-                # Backup the partial assignment and the clauses before the decision
-                new_partial_assignment = partial_assignment.copy()
-                new_clauses = [tuple(clause) for clause in clauses]
-
-                # Apply the literal assignment
-                new_partial_assignment[stripped_literal] = value if '-' not in next_literal else not value
-                updated_clauses = simplify_clauses(new_clauses, new_partial_assignment)
+                # new_partial_assignment[stripped_literal] = value if '-' not in next_literal else not value
+                partial_assignment[stripped_literal] = value
 
                 # Recurse with the new partial assignment and simplified clauses
-                success = recursive_solve(new_partial_assignment, updated_clauses)
-                if success:
+                if recursive_solve(partial_assignment.copy(), clauses.copy()):
                     return True
 
             return False
@@ -275,23 +286,27 @@ class SATSolver():
                     stripped_literal = literal.replace('-', '')
                     if stripped_literal in assignment:
                         # literal satisfaction check
-                        if (('-' in literal and not assignment[stripped_literal]) or
-                                ('-' not in literal and assignment[stripped_literal])):
+                        if ((('-' in literal) and assignment[stripped_literal] == False) or
+                                (('-' not in literal) and assignment[stripped_literal] == True)):
+                            # if clause is satisfied, we can toss it out
                             clause_satisfied = True
                             break
                     else:
+                        # if the literal is not in the assignment, keep it in the clause
                         new_clause.append(literal)
 
-                if not clause_satisfied and new_clause:
+                # keep clause if it hasn't been satisfied yet or if it is empty
+                if not clause_satisfied:
                     simplified_clauses.add(tuple(new_clause))
 
             return simplified_clauses
 
         # solve puzzle
-        success = recursive_solve({}, self.clauses.copy())
-
-        # write the output to file
+        if not recursive_solve({}, self.clauses.copy()):
+            print("No solution found")
+            self.solution = {}
         self.write_output()
+
 
     def solve_heuristic_2(self):
         '''
@@ -315,6 +330,21 @@ class SATSolver():
                     f.write(f"-{assignment} 0\n")
 
 
+    def check_partial_assignment(self, pa, clauses):
+        for clause in clauses:
+            clause_satisfied = False
+            for literal in clause:
+                strp_literal = literal.replace('-','')
+                if (strp_literal not in pa) or ((strp_literal in pa) and (pa[strp_literal] == ('-' not in literal))):
+                    clause_satisfied = True
+                    continue
+            if not clause_satisfied:
+                # print(f"Clause {clause} not satisfied!")
+                # print(pa)
+                return False
+        return True
+
+
     def verify_solution(self, puzzle_file, sol_file):
         puzzle_clauses, _ = self.read_input(puzzle_file)
         sol_clauses, _ = self.read_input(sol_file)
@@ -332,7 +362,9 @@ class SATSolver():
                 print(f"Clause {clause} not satisfied!")
 
         if rules_broken:
-            print("Rules were not followed!")
+            print("The above clauses were not followed!")
+        else:
+            print("Solution is valid!")
 
 if __name__ == "__main__":
     algo_number = int(sys.argv[1])
