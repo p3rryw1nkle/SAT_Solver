@@ -1,6 +1,9 @@
 import time
 import sys
 import os
+from copy import deepcopy
+
+
 
 class SATSolver():
     def __init__(self, input_file):
@@ -191,6 +194,9 @@ class SATSolver():
 
         return recursive_solve({}, self.clauses.copy())
 
+
+
+
     def solve_heuristic_1(self):
         """
         Implement first heuristic
@@ -308,11 +314,147 @@ class SATSolver():
         self.write_output()
 
 
+
+
+
     def solve_heuristic_2(self):
-        '''
-        Implement second heuristic
-        '''
-        pass
+        """
+        Implement first heuristic
+        """
+
+        def recursive_solve(partial_assignment, clauses, last_literal_assigned):
+
+            # if all clauses have been solved
+            if len(clauses) == 0:
+                self.solution = partial_assignment
+                return True
+
+            # if there is an empty clause, the formula is false so return false
+            for clause in clauses:
+                if len(clause) == 0:
+                    return False
+
+            for clause in clauses:
+                if len(clause) == 1:
+                    (lit,) = clause
+                    stripped_literal = lit.replace('-', '')
+                    # print(f"adding unit clause: {clause} to partial assignment")
+                    partial_assignment[stripped_literal] = ('-' not in lit)
+                    last_literal_assigned = stripped_literal                                #last_literal_assigned
+                    assert partial_assignment[stripped_literal] == ('-' not in lit)
+
+
+
+
+
+
+
+            # remove pure literals
+            literal_counts = {}
+            for clause in clauses:
+                for literal in clause:
+                    literal_counts[literal] = literal_counts.get(literal, 0) + 1
+
+
+
+            for literal in list(literal_counts.keys()):
+                rev_literal = self.rev_literal(literal)
+                if rev_literal not in literal_counts:
+                    stripped_literal = literal.replace('-', '')
+                    partial_assignment[stripped_literal] = ('-' not in literal)
+                    last_literal_assigned = stripped_literal
+                    assert partial_assignment[stripped_literal] == ('-' not in literal)
+
+        #    if not self.check_partial_assignment(partial_assignment, clauses):
+        #        raise Exception("PA not valid after pure literal assignment!")
+            
+
+        #    if not self.check_partial_assignment(partial_assignment, clauses):
+        #        raise Exception("PA not valid after simplification!")
+
+
+
+
+
+            # choose the literal with the highest frequency
+            nei_literal_frequency = {}
+            for clause in clauses:
+                rev_last_literal_assigned = self.rev_literal(last_literal_assigned)
+                if (last_literal_assigned in clause) or (rev_last_literal_assigned in clause):
+                    for neighbor in clause:                          #all of these literals are  neighbors
+                        if (neighbor != last_literal_assigned) and (neighbor != rev_last_literal_assigned):
+                            if neighbor not in nei_literal_frequency:
+                                nei_literal_frequency[neighbor] = 0
+                            nei_literal_frequency[neighbor] += 1
+
+
+
+            clauses = simplify_clauses(clauses, partial_assignment)
+
+
+
+            if len(nei_literal_frequency) == 0:
+                print(f"literal frequency is 0, partial assignment: {len(partial_assignment)}")
+
+            # if all literals have already been assigned
+            if not nei_literal_frequency:
+                if self.check_partial_assignment(partial_assignment, clauses):
+                    self.solution = partial_assignment
+                    return True
+                else:
+                    return False
+            
+            # choose the literal with the highest frequency to break ties
+            next_literal = max(nei_literal_frequency, key=nei_literal_frequency.get)
+
+            stripped_literal = next_literal.replace('-', '')
+
+            # Try assigning False, then True
+            for value in [False, True]:
+                # new_partial_assignment[stripped_literal] = value if '-' not in next_literal else not value
+                partial_assignment[stripped_literal] = value
+                last_literal_assigned = stripped_literal
+
+                # Recurse with the new partial assignment and simplified clauses
+                if recursive_solve(partial_assignment.copy(), clauses.copy(), deepcopy(last_literal_assigned)):
+                    return True
+
+            return False
+
+        def simplify_clauses(clauses, assignment):
+            simplified_clauses = set()
+            for clause in clauses:
+                new_clause = []
+                clause_satisfied = False
+
+                for literal in clause:
+                    stripped_literal = literal.replace('-', '')
+                    if stripped_literal in assignment:
+                        # literal satisfaction check
+                        if ((('-' in literal) and assignment[stripped_literal] == False) or
+                                (('-' not in literal) and assignment[stripped_literal] == True)):
+                            # if clause is satisfied, we can toss it out
+                            clause_satisfied = True
+                            break
+                    else:
+                        # if the literal is not in the assignment, keep it in the clause
+                        new_clause.append(literal)
+
+                # keep clause if it hasn't been satisfied yet or if it is empty
+                if not clause_satisfied:
+                    simplified_clauses.add(tuple(new_clause))
+
+            return simplified_clauses
+
+        # solve puzzle
+        if not recursive_solve({}, self.clauses.copy(), None):
+            print("No solution found")
+            self.solution = {}
+        self.write_output()
+
+
+
+
 
     def write_output(self):
         '''
