@@ -1,27 +1,24 @@
+from copy import deepcopy
 import time
 import sys
 import os
-from copy import deepcopy
-
-
 
 class SATSolver():
     def __init__(self, input_file):
+        self.puzzle_file = input_file
         self.file_name = os.path.basename(input_file)
         self.puzzle_dimension = 1
         self.clauses, self.all_literals = self.read_input(input_file)
         self.solution_folder = f"{self.puzzle_dimension}x{self.puzzle_dimension}"
+        self.sol_file = ""
         self.solution = set()
+        self.back_tracks = 0
+
 
     def read_input(self, input_file):
 
         '''
-        111 112 113 114 115 116 117 118 119  0
-        121 122 123 124 125 126 127 128 129  0
-        131 132 133 134 135 136 137 138 139  0
-        141 142 143 144 145 146 147 148 149  0
-        151 152 153 154 155 156 157 158 159  0
-                
+        Reads in input files and converts to a set of clauses
         '''
 
         clauses = set()
@@ -63,6 +60,8 @@ class SATSolver():
         '''
         Implement the DPLL algorithm
         '''
+        self.back_tracks = 0
+
         def recursive_solve(partial_assignment, clauses):
             
             # if all clauses have been solved
@@ -76,6 +75,7 @@ class SATSolver():
             for clause in clauses:
                 # if there is an empty clause, the formula is false so return false
                 if len(clause) == 0:
+                    self.back_tracks += 1
                     return False
                 
                 # if it is a unit clause
@@ -160,6 +160,7 @@ class SATSolver():
                             pure_literals[rev_lit] = False
 
             # add all pure literals to partial_assignment
+            #? branch immediately on pure literals?
             for literal in pure_literals:
                 strp_lit = literal.replace('-','')
                 if pure_literals[literal] == True and (strp_lit not in partial_assignment):
@@ -201,6 +202,7 @@ class SATSolver():
         """
         Implement first heuristic
         """
+        self.back_tracks = 0
 
         def recursive_solve(partial_assignment, clauses):
 
@@ -212,6 +214,7 @@ class SATSolver():
             # if there is an empty clause, the formula is false so return false
             for clause in clauses:
                 if len(clause) == 0:
+                    self.back_tracks += 1
                     return False
 
             for clause in clauses:
@@ -243,7 +246,7 @@ class SATSolver():
             # if not self.check_partial_assignment(partial_assignment, clauses):
             #     raise Exception("PA not valid after pure literal assignment!")
             
-            clauses = simplify_clauses(clauses, partial_assignment)
+            # clauses = simplify_clauses(clauses, partial_assignment)
 
             # if not self.check_partial_assignment(partial_assignment, clauses):
             #     raise Exception("PA not valid after simplification!")
@@ -264,6 +267,7 @@ class SATSolver():
                     self.solution = partial_assignment
                     return True
                 else:
+                    self.back_tracks += 1
                     return False
             
             # choose the literal with the highest frequency to break ties
@@ -275,11 +279,13 @@ class SATSolver():
             for value in [False, True]:
                 # new_partial_assignment[stripped_literal] = value if '-' not in next_literal else not value
                 partial_assignment[stripped_literal] = value
+                new_clauses = simplify_clauses(clauses, partial_assignment.copy())
 
                 # Recurse with the new partial assignment and simplified clauses
-                if recursive_solve(partial_assignment.copy(), clauses.copy()):
+                if recursive_solve(partial_assignment.copy(), new_clauses):
                     return True
-
+            
+            self.back_tracks += 1
             return False
 
         def simplify_clauses(clauses, assignment):
@@ -311,7 +317,7 @@ class SATSolver():
         if not recursive_solve({}, self.clauses.copy()):
             print("No solution found")
             self.solution = {}
-        self.write_output()
+        # self.write_output()
 
     def solve_heuristic_2(self):
         """
@@ -319,6 +325,9 @@ class SATSolver():
         """
 
         def recursive_solve(partial_assignment, clauses, last_literal_assigned):
+
+            # if not self.check_partial_assignment(partial_assignment, clauses):
+                # raise Exception("PA not valid after unit clause assignment!")
 
             # if all clauses have been solved
             if len(clauses) == 0:
@@ -328,51 +337,36 @@ class SATSolver():
             # if there is an empty clause, the formula is false so return false
             for clause in clauses:
                 if len(clause) == 0:
+                    self.back_tracks += 1
                     return False
 
+            # add unit clauses to partial assignment
             for clause in clauses:
                 if len(clause) == 1:
                     (lit,) = clause
                     stripped_literal = lit.replace('-', '')
-                    # print(f"adding unit clause: {clause} to partial assignment")
                     partial_assignment[stripped_literal] = ('-' not in lit)
-                    last_literal_assigned = stripped_literal                                #last_literal_assigned
                     assert partial_assignment[stripped_literal] == ('-' not in lit)
+                    last_literal_assigned = stripped_literal                                
 
-
-
-
-
-
-
-            # remove pure literals
+            # assign pure literals
             literal_counts = {}
             for clause in clauses:
                 for literal in clause:
                     literal_counts[literal] = literal_counts.get(literal, 0) + 1
 
-
-
-            for literal in list(literal_counts.keys()):
+            for literal in literal_counts.keys():
                 rev_literal = self.rev_literal(literal)
                 if rev_literal not in literal_counts:
                     stripped_literal = literal.replace('-', '')
                     partial_assignment[stripped_literal] = ('-' not in literal)
-                    last_literal_assigned = stripped_literal
                     assert partial_assignment[stripped_literal] == ('-' not in literal)
+                    last_literal_assigned = stripped_literal
 
-        #    if not self.check_partial_assignment(partial_assignment, clauses):
-        #        raise Exception("PA not valid after pure literal assignment!")
-            
+            # if not self.check_partial_assignment(partial_assignment, clauses):
+            #     raise Exception("PA not valid after pure literal assignment!")
 
-        #    if not self.check_partial_assignment(partial_assignment, clauses):
-        #        raise Exception("PA not valid after simplification!")
-
-
-
-
-
-            # choose the literal with the highest frequency
+            # choose the neighboring literal with the highest frequency
             nei_literal_frequency = {}
             for clause in clauses:
                 rev_last_literal_assigned = self.rev_literal(last_literal_assigned)
@@ -383,38 +377,50 @@ class SATSolver():
                                 nei_literal_frequency[neighbor] = 0
                             nei_literal_frequency[neighbor] += 1
 
+            # if not self.check_partial_assignment(partial_assignment, clauses):
+            #     raise Exception("PA not valid after simplification!")
 
+            next_literal = None
 
-            clauses = simplify_clauses(clauses, partial_assignment)
-
-
-
-            if len(nei_literal_frequency) == 0:
-                print(f"literal frequency is 0, partial assignment: {len(partial_assignment)}")
-
-            # if all literals have already been assigned
+            # if there are no neighboring literals of the last literal assigned
             if not nei_literal_frequency:
-                if self.check_partial_assignment(partial_assignment, clauses):
-                    self.solution = partial_assignment
-                    return True
+                # check to see if there are literals still left to assign
+                assigned_literals = set(partial_assignment.keys())
+                unassigned_literals = self.all_literals.difference(assigned_literals)  
+
+                if len(unassigned_literals) == 0:
+                    print("no neighbors to choose from!")
+                    if self.check_partial_assignment(partial_assignment, clauses):
+                        self.solution = partial_assignment
+                        return True
+                    else:
+                        self.back_tracks += 1
+                        return False
                 else:
-                    return False
-            
-            # choose the literal with the highest frequency to break ties
-            next_literal = max(nei_literal_frequency, key=nei_literal_frequency.get)
+                    # if there are, just choose the first one
+                    next_literal = sorted(unassigned_literals).pop(0)
+            else:           
+                # if there are neighboring literals, choose the closest literal
+                next_literal = max(nei_literal_frequency, key=nei_literal_frequency.get)
+                print(next_literal)
+
+            assert next_literal != None
 
             stripped_literal = next_literal.replace('-', '')
+
 
             # Try assigning False, then True
             for value in [False, True]:
                 # new_partial_assignment[stripped_literal] = value if '-' not in next_literal else not value
                 partial_assignment[stripped_literal] = value
                 last_literal_assigned = stripped_literal
+                new_clauses = simplify_clauses(clauses, partial_assignment.copy())
 
                 # Recurse with the new partial assignment and simplified clauses
-                if recursive_solve(partial_assignment.copy(), clauses.copy(), deepcopy(last_literal_assigned)):
+                if recursive_solve(partial_assignment.copy(), new_clauses, deepcopy(last_literal_assigned)):
                     return True
-
+                
+            self.back_tracks += 1
             return False
 
         def simplify_clauses(clauses, assignment):
@@ -428,7 +434,7 @@ class SATSolver():
                     if stripped_literal in assignment:
                         # literal satisfaction check
                         if ((('-' in literal) and assignment[stripped_literal] == False) or
-                                (('-' not in literal) and assignment[stripped_literal] == True)):
+                            (('-' not in literal) and assignment[stripped_literal] == True)):
                             # if clause is satisfied, we can toss it out
                             clause_satisfied = True
                             break
@@ -449,15 +455,13 @@ class SATSolver():
         self.write_output()
 
 
-
-
-
     def write_output(self):
         '''
         Write output to file in DIMAC format
         '''
+        self.sol_file = f"solutions/{self.solution_folder}/sol_{self.file_name}"
 
-        with open(f"solutions/{self.solution_folder}/sol_{self.file_name}", "w") as f:
+        with open(self.sol_file, "w") as f:
             f.write(f"p {len(self.all_literals)} {len(self.solution)}\n")
             sorted_solution = sorted(self.solution)
             for assignment in sorted_solution:
@@ -477,13 +481,23 @@ class SATSolver():
                     clause_satisfied = True
                     continue
             if not clause_satisfied:
-                # print(f"Clause {clause} not satisfied!")
-                # print(pa)
+                print(f"Clause {clause} not satisfied!")
+                print(pa)
                 return False
         return True
 
 
-    def verify_solution(self, puzzle_file, sol_file):
+    def verify_solution(self, puzzle_file=None, sol_file=None):
+        if not puzzle_file:
+            puzzle_file = self.puzzle_file
+            if not puzzle_file:
+                raise Exception("Error, no puzzle file provided to verify solution!")
+
+        if not sol_file:
+            sol_file = self.sol_file
+            if sol_file == "":
+                raise Exception("Error, no solution file provided to verify solution!")
+            
         puzzle_clauses, _ = self.read_input(puzzle_file)
         sol_clauses, _ = self.read_input(sol_file)
 
@@ -501,8 +515,11 @@ class SATSolver():
 
         if rules_broken:
             print("The above clauses were not followed!")
+            return False
         else:
             print("Solution is valid!")
+            return True
+
 
 if __name__ == "__main__":
     algo_number = int(sys.argv[1])
@@ -525,6 +542,9 @@ if __name__ == "__main__":
             solver.solve_heuristic_2()
         case 4:
             solver.verify_solution(input_file, sol_file)
+    
+    if algo_number != 4:
+        solver.verify_solution(input_file)
 
     end_time = time.time()
     elapsed_time = end_time - start_time
