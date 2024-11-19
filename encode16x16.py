@@ -1,3 +1,5 @@
+import os
+
 def calculate_dimac(input_value, row, column):
 
     # (17^2)*r + (17^1)*c + (17^0)*v
@@ -63,15 +65,28 @@ def formula_calculate(r,c,v):
 
 
 
+
+
+
+
+
 # Open the .txt file in read mode
-with open('test_sets/unencoded/one1616.txt', 'r') as file:
+with open('test_sets/unencoded/16x16.txt', 'r') as file:
     # Loop through each line in the file
 
-    counter = 1
-    current_row = 1
-    current_column = 1
+    sudoku_counter = 1
+
+    folder_path = './16x16_encoded_files/'
+    os.makedirs(folder_path, exist_ok=True)  # This creates the folder if it doesn't exist
+
+
 
     for line in file:
+        
+        counter = 1
+        current_row = 1
+        current_column = 1
+        
         # Strip any trailing newline or whitespace characters
         useful_variable = line.strip()
         
@@ -80,12 +95,16 @@ with open('test_sets/unencoded/one1616.txt', 'r') as file:
 
 
         # Create and open a new .txt file for writing
-        file_name = "encoded_16x16_"+str(counter)
+        file_name = f"{folder_path}encoded_16x16_{sudoku_counter}"
 
         with open(file_name, 'w') as output_file:
         
 
             for character in line:
+
+                if character == '\n':
+                    continue
+
                 print(f"Processing Character: {character}")
             
                 if character == '.':
@@ -107,6 +126,8 @@ with open('test_sets/unencoded/one1616.txt', 'r') as file:
 
 
         print(f"Output File '{file_name}' has been created and written successfully.")
+
+        sudoku_counter += 1
 
 
 
