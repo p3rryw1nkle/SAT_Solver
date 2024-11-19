@@ -129,7 +129,7 @@ class SATSolver():
 
                             assert partial_assignment[strp_lit] != lit_val
 
-                            print(f"Removing literal {literal} from clause {clause}")
+                            # print(f"Removing literal {literal} from clause {clause}")
                             # shorten clause (literal is false so we only care about the rest of the clause)
                             new_clause.remove(literal)
                 
@@ -306,7 +306,6 @@ class SATSolver():
             print("No solution found")
             self.solution = {}
         self.write_output()
-
 
     def solve_heuristic_2(self):
         '''
