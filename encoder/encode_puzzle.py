@@ -33,5 +33,5 @@ class PuzzleEncoder():
 
 
 if __name__ == "__main__":
-    encoder = PuzzleEncoder(input_file="9set.txt", dimension=9)
+    encoder = PuzzleEncoder(input_file="1000_sudokus.txt", dimension=9)
     encoder.process_sudoku_file()

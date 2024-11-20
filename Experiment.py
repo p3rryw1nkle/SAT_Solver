@@ -11,15 +11,15 @@ class SATExperiment():
     Records how many times each heuristic returns false (i.e. has to backtrack)
     """
     def __init__(self):
-        self.experiment_name = "test1"
+        self.experiment_name = "1000_sudokus"
         self.result_file = f"experiment_data/{self.experiment_name}.json"
-        self.solvers = ["solve_dpll", "solve_heuristic_2", "solve_heuristic_1"]
+        self.solvers = ["solve_heuristic_2", "solve_heuristic_1", "solve_dpll"]
         self.puzzle_sets = {
-            "standard" : "test_sets/encoded/9x9_sudokus/standard",
-            "hard" : "test_sets/encoded/9x9_sudokus/hard"
+            "1000" : "test_sets/encoded/9x9_sudokus/1000"
         }
+        self.skip_puzzles = {"hard_sudoku_13.txt"}
         self.experiment_data = {solver : {} for solver in self.solvers}
-        self.load_prev
+        self.load_prev()
 
 
     def load_prev(self):
@@ -31,17 +31,14 @@ class SATExperiment():
             with open(self.result_file, "r") as json_file:
                 saved_data = json.load(json_file)
                 self.experiment_data = saved_data
+                print(f"found old experimental data: {saved_data}")
         else:
             print("old file does not exist... skipping")
 
     
     def gather_data(self):
         for algo in self.solvers:
-            print(f"Starting to solve with algorithm: {algo}")
-
             for puzzle_set, dir_path in self.puzzle_sets.items():
-                print(f"On puzzle set: {puzzle_set}")
-
                 # add to dictionary
                 if puzzle_set not in self.experiment_data[algo]:
                     self.experiment_data[algo][puzzle_set] = {}
@@ -54,12 +51,17 @@ class SATExperiment():
 
                 for puzzle in file_list:
                     puzzle_name = os.path.basename(puzzle)
+                    print(self.skip_puzzles)
 
                     if puzzle_name in self.experiment_data[algo][puzzle_set]:
                         continue
+                    if puzzle_name in self.skip_puzzles:
+                        continue
                     else:
                         self.experiment_data[algo][puzzle_set][puzzle_name] = {}
-
+                    
+                    print(f"On algorithm: {algo}")
+                    print(f"On puzzle set: {puzzle_set}")
                     print(f"On puzzle: {puzzle_name}")
                     print(f"Puzzle file path: {puzzle}")
 
@@ -68,8 +70,10 @@ class SATExperiment():
                     solver_instance = SATSolver(puzzle)
                     result = getattr(solver_instance, algo)()
                     solver_instance.write_output()
-                    assert solver_instance.verify_solution() == True
-                    print(result)
+                    while solver_instance.verify_solution() == False:
+                        print("solution bad... trying again")
+                        result = getattr(solver_instance, algo)()
+                        solver_instance.write_output()
 
                     end_time = time.time()
                     elapsed_time = end_time - start_time

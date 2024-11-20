@@ -1,0 +1,692 @@
+{
+    "solve_dpll": {
+        "standard": {
+            "9set_sudoku_25.txt": {
+                "time": 0.09032392501831055,
+                "back_tracks": 2
+            },
+            "9set_sudoku_19.txt": {
+                "time": 0.09263300895690918,
+                "back_tracks": 44
+            },
+            "9set_sudoku_18.txt": {
+                "time": 0.21844792366027832,
+                "back_tracks": 142
+            },
+            "9set_sudoku_30.txt": {
+                "time": 0.17331218719482422,
+                "back_tracks": 104
+            },
+            "9set_sudoku_24.txt": {
+                "time": 0.14127421379089355,
+                "back_tracks": 82
+            },
+            "9set_sudoku_26.txt": {
+                "time": 0.09944009780883789,
+                "back_tracks": 8
+            },
+            "9set_sudoku_27.txt": {
+                "time": 0.12187385559082031,
+                "back_tracks": 48
+            },
+            "9set_sudoku_9.txt": {
+                "time": 0.23874187469482422,
+                "back_tracks": 294
+            },
+            "9set_sudoku_23.txt": {
+                "time": 9.942659139633179,
+                "back_tracks": 35280
+            },
+            "9set_sudoku_22.txt": {
+                "time": 0.17299985885620117,
+                "back_tracks": 160
+            },
+            "9set_sudoku_8.txt": {
+                "time": 0.21425604820251465,
+                "back_tracks": 388
+            },
+            "9set_sudoku_20.txt": {
+                "time": 0.18641996383666992,
+                "back_tracks": 204
+            },
+            "9set_sudoku_21.txt": {
+                "time": 0.2676217555999756,
+                "back_tracks": 448
+            },
+            "9set_sudoku_6.txt": {
+                "time": 0.8276810646057129,
+                "back_tracks": 1258
+            },
+            "9set_sudoku_10.txt": {
+                "time": 0.1269388198852539,
+                "back_tracks": 72
+            },
+            "9set_sudoku_11.txt": {
+                "time": 1.1617231369018555,
+                "back_tracks": 790
+            },
+            "9set_sudoku_7.txt": {
+                "time": 0.09808993339538574,
+                "back_tracks": 6
+            },
+            "9set_sudoku_5.txt": {
+                "time": 0.1621100902557373,
+                "back_tracks": 68
+            },
+            "9set_sudoku_13.txt": {
+                "time": 0.17354989051818848,
+                "back_tracks": 124
+            },
+            "9set_sudoku_12.txt": {
+                "time": 0.10117888450622559,
+                "back_tracks": 22
+            },
+            "9set_sudoku_4.txt": {
+                "time": 0.19472885131835938,
+                "back_tracks": 166
+            },
+            "9set_sudoku_16.txt": {
+                "time": 0.5200121402740479,
+                "back_tracks": 648
+            },
+            "9set_sudoku_17.txt": {
+                "time": 0.38396596908569336,
+                "back_tracks": 372
+            },
+            "9set_sudoku_1.txt": {
+                "time": 0.12847375869750977,
+                "back_tracks": 40
+            },
+            "9set_sudoku_3.txt": {
+                "time": 0.507667064666748,
+                "back_tracks": 830
+            },
+            "9set_sudoku_29.txt": {
+                "time": 0.10624885559082031,
+                "back_tracks": 28
+            },
+            "9set_sudoku_15.txt": {
+                "time": 0.08715987205505371,
+                "back_tracks": 8
+            },
+            "9set_sudoku_14.txt": {
+                "time": 0.33067893981933594,
+                "back_tracks": 250
+            },
+            "9set_sudoku_28.txt": {
+                "time": 3.0557451248168945,
+                "back_tracks": 5066
+            },
+            "9set_sudoku_2.txt": {
+                "time": 0.4162600040435791,
+                "back_tracks": 540
+            }
+        },
+        "hard": {
+            "hard_sudoku_8.txt": {
+                "time": 0.49961280822753906,
+                "back_tracks": 730
+            },
+            "hard_sudoku_9.txt": {
+                "time": 33.38632893562317,
+                "back_tracks": 22314
+            },
+            "hard_sudoku_12.txt": {
+                "time": 604.4170389175415,
+                "back_tracks": 1592760
+            },
+            "hard_sudoku_11.txt": {
+                "time": 7.044942140579224,
+                "back_tracks": 5058
+            },
+            "hard_sudoku_10.txt": {
+                "time": 27.873235940933228,
+                "back_tracks": 20566
+            },
+            "hard_sudoku_14.txt": {
+                "time": 0.3525240421295166,
+                "back_tracks": 428
+            },
+            "hard_sudoku_28.txt": {
+                "time": 0.20401287078857422,
+                "back_tracks": 48
+            },
+            "hard_sudoku_29.txt": {
+                "time": 0.15777301788330078,
+                "back_tracks": 64
+            },
+            "hard_sudoku_15.txt": {
+                "time": 0.16915392875671387,
+                "back_tracks": 38
+            },
+            "hard_sudoku_17.txt": {
+                "time": 16.834183931350708,
+                "back_tracks": 12122
+            },
+            "hard_sudoku_16.txt": {
+                "time": 17.10439395904541,
+                "back_tracks": 12462
+            },
+            "hard_sudoku_27.txt": {
+                "time": 0.309891939163208,
+                "back_tracks": 240
+            },
+            "hard_sudoku_26.txt": {
+                "time": 0.4225893020629883,
+                "back_tracks": 348
+            },
+            "hard_sudoku_18.txt": {
+                "time": 0.12166285514831543,
+                "back_tracks": 22
+            },
+            "hard_sudoku_24.txt": {
+                "time": 0.2797820568084717,
+                "back_tracks": 108
+            },
+            "hard_sudoku_30.txt": {
+                "time": 410.24281072616577,
+                "back_tracks": 483232
+            },
+            "hard_sudoku_25.txt": {
+                "time": 0.49015283584594727,
+                "back_tracks": 528
+            },
+            "hard_sudoku_19.txt": {
+                "time": 1.5854151248931885,
+                "back_tracks": 3382
+            }
+        }
+    },
+    "solve_heuristic_2": {
+        "standard": {
+            "9set_sudoku_25.txt": {
+                "time": 0.08918285369873047,
+                "back_tracks": 13
+            },
+            "9set_sudoku_19.txt": {
+                "time": 0.0862576961517334,
+                "back_tracks": 20
+            },
+            "9set_sudoku_18.txt": {
+                "time": 0.10158109664916992,
+                "back_tracks": 41
+            },
+            "9set_sudoku_30.txt": {
+                "time": 0.08910584449768066,
+                "back_tracks": 10
+            },
+            "9set_sudoku_24.txt": {
+                "time": 0.08928799629211426,
+                "back_tracks": 19
+            },
+            "9set_sudoku_26.txt": {
+                "time": 0.0881960391998291,
+                "back_tracks": 7
+            },
+            "9set_sudoku_27.txt": {
+                "time": 0.18557429313659668,
+                "back_tracks": 101
+            },
+            "9set_sudoku_9.txt": {
+                "time": 0.08455491065979004,
+                "back_tracks": 6
+            },
+            "9set_sudoku_23.txt": {
+                "time": 0.1307520866394043,
+                "back_tracks": 65
+            },
+            "9set_sudoku_22.txt": {
+                "time": 0.11516094207763672,
+                "back_tracks": 90
+            },
+            "9set_sudoku_8.txt": {
+                "time": 0.0837090015411377,
+                "back_tracks": 4
+            },
+            "9set_sudoku_20.txt": {
+                "time": 0.09650468826293945,
+                "back_tracks": 40
+            },
+            "9set_sudoku_21.txt": {
+                "time": 0.08652424812316895,
+                "back_tracks": 6
+            },
+            "9set_sudoku_6.txt": {
+                "time": 0.20818805694580078,
+                "back_tracks": 283
+            },
+            "9set_sudoku_10.txt": {
+                "time": 0.10442090034484863,
+                "back_tracks": 10
+            },
+            "9set_sudoku_11.txt": {
+                "time": 0.26784491539001465,
+                "back_tracks": 246
+            },
+            "9set_sudoku_7.txt": {
+                "time": 0.14274001121520996,
+                "back_tracks": 88
+            },
+            "9set_sudoku_5.txt": {
+                "time": 0.09683680534362793,
+                "back_tracks": 11
+            },
+            "9set_sudoku_13.txt": {
+                "time": 0.0962679386138916,
+                "back_tracks": 27
+            },
+            "9set_sudoku_12.txt": {
+                "time": 0.10842132568359375,
+                "back_tracks": 38
+            },
+            "9set_sudoku_4.txt": {
+                "time": 0.09050798416137695,
+                "back_tracks": 24
+            },
+            "9set_sudoku_16.txt": {
+                "time": 0.14202523231506348,
+                "back_tracks": 89
+            },
+            "9set_sudoku_17.txt": {
+                "time": 0.10394811630249023,
+                "back_tracks": 36
+            },
+            "9set_sudoku_1.txt": {
+                "time": 0.1549088954925537,
+                "back_tracks": 90
+            },
+            "9set_sudoku_3.txt": {
+                "time": 0.11360692977905273,
+                "back_tracks": 47
+            },
+            "9set_sudoku_29.txt": {
+                "time": 0.12917470932006836,
+                "back_tracks": 95
+            },
+            "9set_sudoku_15.txt": {
+                "time": 0.13125991821289062,
+                "back_tracks": 90
+            },
+            "9set_sudoku_14.txt": {
+                "time": 0.16895198822021484,
+                "back_tracks": 100
+            },
+            "9set_sudoku_28.txt": {
+                "time": 0.21495413780212402,
+                "back_tracks": 170
+            },
+            "9set_sudoku_2.txt": {
+                "time": 0.2036440372467041,
+                "back_tracks": 188
+            }
+        },
+        "hard": {
+            "hard_sudoku_8.txt": {
+                "time": 0.7340178489685059,
+                "back_tracks": 588
+            },
+            "hard_sudoku_9.txt": {
+                "time": 4.760272979736328,
+                "back_tracks": 4591
+            },
+            "hard_sudoku_12.txt": {
+                "time": 1.467278003692627,
+                "back_tracks": 1687
+            },
+            "hard_sudoku_13.txt": {
+                "time": 7.0751121044158936,
+                "back_tracks": 9626
+            },
+            "hard_sudoku_11.txt": {
+                "time": 0.5519399642944336,
+                "back_tracks": 484
+            },
+            "hard_sudoku_10.txt": {
+                "time": 4.869557857513428,
+                "back_tracks": 4655
+            },
+            "hard_sudoku_14.txt": {
+                "time": 0.8754558563232422,
+                "back_tracks": 953
+            },
+            "hard_sudoku_28.txt": {
+                "time": 0.14140701293945312,
+                "back_tracks": 75
+            },
+            "hard_sudoku_29.txt": {
+                "time": 0.14353680610656738,
+                "back_tracks": 60
+            },
+            "hard_sudoku_15.txt": {
+                "time": 0.4795408248901367,
+                "back_tracks": 435
+            },
+            "hard_sudoku_17.txt": {
+                "time": 0.6084771156311035,
+                "back_tracks": 688
+            },
+            "hard_sudoku_16.txt": {
+                "time": 0.5970146656036377,
+                "back_tracks": 582
+            },
+            "hard_sudoku_27.txt": {
+                "time": 1.3389348983764648,
+                "back_tracks": 1591
+            },
+            "hard_sudoku_26.txt": {
+                "time": 0.1086881160736084,
+                "back_tracks": 15
+            },
+            "hard_sudoku_18.txt": {
+                "time": 0.22749686241149902,
+                "back_tracks": 156
+            },
+            "hard_sudoku_24.txt": {
+                "time": 0.8165721893310547,
+                "back_tracks": 802
+            },
+            "hard_sudoku_30.txt": {
+                "time": 1.8014130592346191,
+                "back_tracks": 2206
+            },
+            "hard_sudoku_25.txt": {
+                "time": 0.20656418800354004,
+                "back_tracks": 100
+            },
+            "hard_sudoku_19.txt": {
+                "time": 0.41790318489074707,
+                "back_tracks": 497
+            },
+            "hard_sudoku_21.txt": {
+                "time": 3.4569079875946045,
+                "back_tracks": 4456
+            },
+            "hard_sudoku_20.txt": {
+                "time": 0.5012180805206299,
+                "back_tracks": 544
+            },
+            "hard_sudoku_22.txt": {
+                "time": 0.4094560146331787,
+                "back_tracks": 366
+            },
+            "hard_sudoku_23.txt": {
+                "time": 0.3065810203552246,
+                "back_tracks": 213
+            },
+            "hard_sudoku_2.txt": {
+                "time": 0.2524130344390869,
+                "back_tracks": 209
+            },
+            "hard_sudoku_3.txt": {
+                "time": 1.5744750499725342,
+                "back_tracks": 1767
+            },
+            "hard_sudoku_1.txt": {
+                "time": 2.9873220920562744,
+                "back_tracks": 3578
+            },
+            "hard_sudoku_4.txt": {
+                "time": 2.643632173538208,
+                "back_tracks": 2650
+            },
+            "hard_sudoku_5.txt": {
+                "time": 0.13613104820251465,
+                "back_tracks": 42
+            },
+            "hard_sudoku_7.txt": {
+                "time": 5.535604953765869,
+                "back_tracks": 5670
+            },
+            "hard_sudoku_6.txt": {
+                "time": 1.363868236541748,
+                "back_tracks": 1455
+            }
+        }
+    },
+    "solve_heuristic_1": {
+        "standard": {
+            "9set_sudoku_25.txt": {
+                "time": 0.15395808219909668,
+                "back_tracks": 320
+            },
+            "9set_sudoku_19.txt": {
+                "time": 0.07860898971557617,
+                "back_tracks": 0
+            },
+            "9set_sudoku_18.txt": {
+                "time": 0.2888810634613037,
+                "back_tracks": 260
+            },
+            "9set_sudoku_30.txt": {
+                "time": 0.09136295318603516,
+                "back_tracks": 0
+            },
+            "9set_sudoku_24.txt": {
+                "time": 0.08599615097045898,
+                "back_tracks": 16
+            },
+            "9set_sudoku_26.txt": {
+                "time": 0.8397359848022461,
+                "back_tracks": 2175
+            },
+            "9set_sudoku_27.txt": {
+                "time": 0.11710691452026367,
+                "back_tracks": 76
+            },
+            "9set_sudoku_9.txt": {
+                "time": 0.09209203720092773,
+                "back_tracks": 27
+            },
+            "9set_sudoku_23.txt": {
+                "time": 0.8042521476745605,
+                "back_tracks": 1627
+            },
+            "9set_sudoku_22.txt": {
+                "time": 0.16171813011169434,
+                "back_tracks": 140
+            },
+            "9set_sudoku_8.txt": {
+                "time": 0.0854339599609375,
+                "back_tracks": 5
+            },
+            "9set_sudoku_20.txt": {
+                "time": 0.08717083930969238,
+                "back_tracks": 1
+            },
+            "9set_sudoku_21.txt": {
+                "time": 0.10755491256713867,
+                "back_tracks": 61
+            },
+            "9set_sudoku_6.txt": {
+                "time": 0.5279369354248047,
+                "back_tracks": 1157
+            },
+            "9set_sudoku_10.txt": {
+                "time": 0.5169577598571777,
+                "back_tracks": 783
+            },
+            "9set_sudoku_11.txt": {
+                "time": 5.560938358306885,
+                "back_tracks": 9979
+            },
+            "9set_sudoku_7.txt": {
+                "time": 0.12091588973999023,
+                "back_tracks": 89
+            },
+            "9set_sudoku_5.txt": {
+                "time": 0.12428784370422363,
+                "back_tracks": 80
+            },
+            "9set_sudoku_13.txt": {
+                "time": 0.15155506134033203,
+                "back_tracks": 160
+            },
+            "9set_sudoku_12.txt": {
+                "time": 0.09156012535095215,
+                "back_tracks": 40
+            },
+            "9set_sudoku_4.txt": {
+                "time": 0.15164399147033691,
+                "back_tracks": 78
+            },
+            "9set_sudoku_16.txt": {
+                "time": 0.24143600463867188,
+                "back_tracks": 345
+            },
+            "9set_sudoku_17.txt": {
+                "time": 0.08717179298400879,
+                "back_tracks": 0
+            },
+            "9set_sudoku_1.txt": {
+                "time": 0.26222896575927734,
+                "back_tracks": 247
+            },
+            "9set_sudoku_3.txt": {
+                "time": 0.5618720054626465,
+                "back_tracks": 1002
+            },
+            "9set_sudoku_29.txt": {
+                "time": 0.1574420928955078,
+                "back_tracks": 199
+            },
+            "9set_sudoku_15.txt": {
+                "time": 0.08819293975830078,
+                "back_tracks": 0
+            },
+            "9set_sudoku_14.txt": {
+                "time": 0.30942606925964355,
+                "back_tracks": 519
+            },
+            "9set_sudoku_28.txt": {
+                "time": 0.4986608028411865,
+                "back_tracks": 620
+            },
+            "9set_sudoku_2.txt": {
+                "time": 0.30318593978881836,
+                "back_tracks": 360
+            }
+        },
+        "hard": {
+            "hard_sudoku_8.txt": {
+                "time": 211.27384233474731,
+                "back_tracks": 309737
+            },
+            "hard_sudoku_9.txt": {
+                "time": 128.97702813148499,
+                "back_tracks": 176609
+            },
+            "hard_sudoku_12.txt": {
+                "time": 67.31921577453613,
+                "back_tracks": 103688
+            },
+            "hard_sudoku_13.txt": {
+                "time": 53.99161911010742,
+                "back_tracks": 74372
+            },
+            "hard_sudoku_11.txt": {
+                "time": 35.97042894363403,
+                "back_tracks": 48472
+            },
+            "hard_sudoku_10.txt": {
+                "time": 43.02128314971924,
+                "back_tracks": 59641
+            },
+            "hard_sudoku_14.txt": {
+                "time": 260.73731088638306,
+                "back_tracks": 369487
+            },
+            "hard_sudoku_28.txt": {
+                "time": 0.1818990707397461,
+                "back_tracks": 162
+            },
+            "hard_sudoku_29.txt": {
+                "time": 8.291752338409424,
+                "back_tracks": 14422
+            },
+            "hard_sudoku_15.txt": {
+                "time": 339.28059816360474,
+                "back_tracks": 469521
+            },
+            "hard_sudoku_17.txt": {
+                "time": 0.6284961700439453,
+                "back_tracks": 805
+            },
+            "hard_sudoku_16.txt": {
+                "time": 0.7631721496582031,
+                "back_tracks": 1092
+            },
+            "hard_sudoku_27.txt": {
+                "time": 111.74318623542786,
+                "back_tracks": 157076
+            },
+            "hard_sudoku_26.txt": {
+                "time": 0.6096823215484619,
+                "back_tracks": 550
+            },
+            "hard_sudoku_18.txt": {
+                "time": 3.234126091003418,
+                "back_tracks": 4142
+            },
+            "hard_sudoku_24.txt": {
+                "time": 22.812617301940918,
+                "back_tracks": 31860
+            },
+            "hard_sudoku_30.txt": {
+                "time": 111.96172714233398,
+                "back_tracks": 165909
+            },
+            "hard_sudoku_25.txt": {
+                "time": 39.224406003952026,
+                "back_tracks": 68660
+            },
+            "hard_sudoku_19.txt": {
+                "time": 126.12251281738281,
+                "back_tracks": 171427
+            },
+            "hard_sudoku_21.txt": {
+                "time": 58.18824315071106,
+                "back_tracks": 89594
+            },
+            "hard_sudoku_20.txt": {
+                "time": 495.9779510498047,
+                "back_tracks": 723099
+            },
+            "hard_sudoku_22.txt": {
+                "time": 19.653520822525024,
+                "back_tracks": 33333
+            },
+            "hard_sudoku_23.txt": {
+                "time": 79.88341879844666,
+                "back_tracks": 121102
+            },
+            "hard_sudoku_2.txt": {
+                "time": 16.9761381149292,
+                "back_tracks": 28068
+            },
+            "hard_sudoku_3.txt": {
+                "time": 24.300753831863403,
+                "back_tracks": 32005
+            },
+            "hard_sudoku_1.txt": {
+                "time": 51.01622128486633,
+                "back_tracks": 75531
+            },
+            "hard_sudoku_4.txt": {
+                "time": 52.71326422691345,
+                "back_tracks": 70739
+            },
+            "hard_sudoku_5.txt": {
+                "time": 74.80688881874084,
+                "back_tracks": 105531
+            },
+            "hard_sudoku_7.txt": {
+                "time": 82.53816986083984,
+                "back_tracks": 113793
+            },
+            "hard_sudoku_6.txt": {
+                "time": 89.33914303779602,
+                "back_tracks": 126023
+            }
+        }
+    }
+}
